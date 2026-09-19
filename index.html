@@ -1,900 +1,700 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Muhammad Usman — Systems & Security</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-        --bg-light: #f7f7f8;
-        --bg-dark: #0d0d0f;
-        --text-dark: #0f1012;
-        --text-light: #f4f4f5;
-        --text-muted: #71717a;
-        --text-muted-dark: #909099;
-        --border-light: rgba(0, 0, 0, 0.08);
-        --border-dark: rgba(255, 255, 255, 0.12);
-        --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
-        }
-
-        * { 
-        margin: 0; 
-        padding: 0; 
-        box-sizing: border-box; 
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-        background-color: var(--bg-light);
-        color: var(--text-dark);
-        font-family: var(--font-sans);
-        line-height: 1.5;
-        -webkit-font-smoothing: antialiased;
-        overflow-x: hidden;
-        }
-
-        /* Custom Cursor (Desktop Only) */
-        @media (min-width: 961px) {
-        * { cursor: none !important; }
-        .cursor-dot {
-            width: 6px;
-            height: 6px;
-            background-color: var(--text-dark);
-            position: fixed;
-            top: 0;
-            left: 0;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: background-color 0.2s ease, transform 0.1s ease;
-        }
-        .cursor-ring {
-            width: 32px;
-            height: 32px;
-            border: 1px solid rgba(15, 16, 18, 0.35);
-            position: fixed;
-            top: 0;
-            left: 0;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%);
-            transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                        height 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                        border-color 0.25s ease-out, 
-                        background-color 0.25s ease-out;
-        }
-        body.hovered .cursor-ring {
-            width: 54px;
-            height: 54px;
-            border-color: rgba(15, 16, 18, 0.15);
-            background-color: rgba(15, 16, 18, 0.05);
-        }
-        body.hovered-dark .cursor-dot { background-color: var(--text-light); }
-        body.hovered-dark .cursor-ring {
-            border-color: rgba(244, 244, 245, 0.4);
-            background-color: rgba(244, 244, 245, 0.1);
-        }
-        }
-
-        @media (max-width: 960px) {
-        .cursor-dot, .cursor-ring { display: none !important; }
-        }
-
-        /* Bi-directional Scroll Reveal Animations */
-        .reveal {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
-                    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: opacity, transform;
-        }
-
-        .reveal.active {
-        opacity: 1;
-        transform: translateY(0);
-        }
-
-        .delay-1 { transition-delay: 0.1s; }
-        .delay-2 { transition-delay: 0.2s; }
-        .delay-3 { transition-delay: 0.3s; }
-        .delay-4 { transition-delay: 0.4s; }
-
-        /* Header */
-        header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        background: rgba(247, 247, 248, 0.85);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-bottom: 1px solid var(--border-light);
-        }
-
-        .nav-container {
-        max-width: 1360px;
-        margin: 0 auto;
-        padding: 16px 48px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        }
-
-        .logo {
-        font-size: 1.2rem;
-        font-weight: 700;
-        letter-spacing: -0.035em;
-        color: var(--text-dark);
-        text-decoration: none;
-        transition: opacity 0.2s;
-        }
-
-        .logo span {
-        font-size: 0.7rem;
-        vertical-align: super;
-        font-weight: 400;
-        margin-left: 2px;
-        }
-
-        .nav-right {
-        display: flex;
-        align-items: center;
-        gap: 32px;
-        margin-left: auto;
-        }
-
-        .nav-menu {
-        display: flex;
-        align-items: center;
-        gap: 28px;
-        }
-
-        .nav-menu a {
-        position: relative;
-        color: var(--text-dark);
-        text-decoration: none;
-        font-size: 0.88rem;
-        font-weight: 500;
-        opacity: 0.8;
-        transition: opacity 0.2s ease;
-        }
-
-        .nav-menu a::after {
-        content: '';
-        position: absolute;
-        bottom: -4px;
-        left: 0;
-        width: 0%;
-        height: 1.5px;
-        background-color: var(--text-dark);
-        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .nav-menu a:hover { opacity: 1; }
-        .nav-menu a:hover::after { width: 100%; }
-
-        .nav-actions {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        }
-
-        .social-links {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        }
-
-        .social-icon-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-dark);
-        background: rgba(0, 0, 0, 0.04);
-        border: 1px solid var(--border-light);
-        text-decoration: none;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .social-icon-btn svg {
-        width: 16px;
-        height: 16px;
-        fill: currentColor;
-        transition: transform 0.2s ease;
-        }
-
-        .social-icon-btn:hover {
-        background: var(--text-dark);
-        color: var(--bg-light);
-        transform: translateY(-2px);
-        }
-
-        .social-icon-btn:hover svg { transform: scale(1.1); }
-
-        .pill-btn {
-        position: relative;
-        background: var(--text-dark);
-        color: var(--text-light);
-        padding: 9px 22px;
-        border-radius: 999px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid transparent;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s, box-shadow 0.2s;
-        }
-
-        .pill-btn:hover {
-        transform: translateY(-2px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        .pill-btn-light {
-        background: rgba(0, 0, 0, 0.05);
-        color: var(--text-dark);
-        border: 1px solid var(--border-light);
-        }
-
-        .pill-btn-light:hover { background: rgba(0, 0, 0, 0.09); }
-
-        /* Hero Section - Strict 100vh Full Screen on Mobile */
-        .hero-section {
-        position: relative;
-        height: 100vh;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        max-width: 1360px;
-        margin: 0 auto;
-        padding: 80px 48px 0;
-        }
-
-        .hero-content {
-        max-width: 600px;
-        z-index: 2;
-        }
-
-        .hero-title {
-        font-size: 3.6rem;
-        font-weight: 600;
-        letter-spacing: -0.045em;
-        line-height: 1.08;
-        margin-bottom: 32px;
-        color: var(--text-dark);
-        }
-
-        #particle-canvas {
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 720px;
-        height: 720px;
-        z-index: 1;
-        }
-
-        /* Dark Section */
-        .dark-section {
-        background-color: var(--bg-dark);
-        color: var(--text-light);
-        padding: 120px 0;
-        position: relative;
-        }
-
-        .dark-container {
-        max-width: 1360px;
-        margin: 0 auto;
-        padding: 0 48px;
-        }
-
-        .split-hero-dark {
-        display: grid;
-        grid-template-columns: 0.8fr 1.2fr;
-        gap: 80px;
-        align-items: flex-start;
-        margin-bottom: 100px;
-        }
-
-        .dark-statement {
-        font-size: 2.2rem;
-        font-weight: 400;
-        letter-spacing: -0.035em;
-        line-height: 1.28;
-        color: var(--text-light);
-        }
-
-        .capability-columns {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        border-top: 1px solid var(--border-dark);
-        padding-top: 54px;
-        }
-
-        .col-item {
-        padding: 0 40px 0 0;
-        border-right: 1px solid var(--border-dark);
-        transition: transform 0.3s ease;
-        }
-
-        .col-item:nth-child(2) { padding-left: 40px; }
-        .col-item:nth-child(3) { padding-left: 40px; padding-right: 0; border-right: none; }
-        .col-item:hover { transform: translateY(-4px); }
-
-        .col-title {
-        font-size: 1.9rem;
-        font-weight: 500;
-        letter-spacing: -0.035em;
-        margin-bottom: 16px;
-        color: var(--text-light);
-        }
-
-        .col-desc {
-        color: var(--text-muted-dark);
-        font-size: 0.92rem;
-        line-height: 1.6;
-        margin-bottom: 24px;
-        }
-
-        .inline-link {
-        color: var(--text-light);
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 500;
-        border-bottom: 1px solid var(--text-light);
-        padding-bottom: 2px;
-        transition: opacity 0.2s, padding-left 0.2s;
-        display: inline-block;
-        }
-
-        .inline-link:hover { opacity: 0.7; padding-left: 4px; }
-
-        /* Work Section */
-        .work-section {
-        padding: 120px 0;
-        max-width: 1360px;
-        margin: 0 auto;
-        padding-left: 48px;
-        padding-right: 48px;
-        }
-
-        .section-headline {
-        font-size: 2.3rem;
-        font-weight: 500;
-        letter-spacing: -0.035em;
-        margin-bottom: 54px;
-        max-width: 680px;
-        line-height: 1.2;
-        }
-
-        .projects-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 28px;
-        }
-
-        .project-card {
-        background: #ffffff;
-        border: 1px solid var(--border-light);
-        border-radius: 20px;
-        padding: 40px;
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 320px;
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-                    box-shadow 0.4s ease, 
-                    border-color 0.3s ease;
-        }
-
-        .project-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-        border-color: rgba(15, 16, 18, 0.2);
-        }
-
-        .project-title {
-        font-size: 1.7rem;
-        font-weight: 600;
-        letter-spacing: -0.03em;
-        margin-bottom: 12px;
-        transition: color 0.2s;
-        }
-
-        .project-card:hover .project-title { color: #000; }
-
-        .project-desc {
-        color: var(--text-muted);
-        font-size: 0.95rem;
-        line-height: 1.55;
-        }
-
-        .project-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 36px;
-        padding-top: 20px;
-        border-top: 1px solid var(--border-light);
-        }
-
-        .project-tech {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--text-muted);
-        }
-
-        .arrow-icon {
-        font-size: 1.1rem;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .project-card:hover .arrow-icon { transform: translateX(5px); }
-
-        /* Contact Section (New) */
-        .contact-section {
-        background: #ececee;
-        padding: 100px 48px;
-        border-top: 1px solid var(--border-light);
-        }
-
-        .contact-container {
-        max-width: 1360px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 60px;
-        align-items: center;
-        }
-
-        .contact-info h3 {
-        font-size: 2.2rem;
-        font-weight: 600;
-        letter-spacing: -0.035em;
-        margin-bottom: 16px;
-        }
-
-        .contact-info p {
-        color: var(--text-muted);
-        font-size: 1rem;
-        margin-bottom: 28px;
-        line-height: 1.6;
-        }
-
-        .contact-cards {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        }
-
-        .contact-card-item {
-        background: #ffffff;
-        border: 1px solid var(--border-light);
-        padding: 20px 24px;
-        border-radius: 14px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-decoration: none;
-        color: var(--text-dark);
-        transition: all 0.3s ease;
-        }
-
-        .contact-card-item:hover {
-        transform: translateY(-3px);
-        border-color: rgba(15, 16, 18, 0.3);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Globe Status Widget */
-        .globe-widget {
-        background: var(--bg-dark);
-        color: var(--text-light);
-        border-radius: 24px;
-        padding: 40px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-
-        .globe-ring {
-        width: 90px;
-        height: 90px;
-        border: 1px dashed rgba(255, 255, 255, 0.25);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 20px;
-        animation: rotateGlobe 12s linear infinite;
-        }
-
-        @keyframes rotateGlobe {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-        }
-
-        .globe-dot-core {
-        width: 14px;
-        height: 14px;
-        background: #34d399;
-        border-radius: 50%;
-        box-shadow: 0 0 15px #34d399;
-        }
-
-        /* Footer */
-        footer {
-        border-top: 1px solid var(--border-light);
-        padding: 40px 48px;
-        max-width: 1360px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        }
-
-        .footer-left {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        }
-
-        /* Mobile Responsive Optimizations */
-        @media (max-width: 960px) {
-        .hero-section {
-            height: 100vh;
-            min-height: 100vh;
-            padding: 70px 20px 0;
-            align-content: center;
-        }
-        .hero-title { 
-            font-size: 2.2rem; 
-            margin-bottom: 20px;
-        }
-        #particle-canvas { 
-            opacity: 0.1; 
-            width: 100%; 
-            height: 100%; 
-            right: 0;
-            pointer-events: none;
-        }
-        .split-hero-dark, .capability-columns, .projects-grid, .contact-container { 
-            grid-template-columns: 1fr; 
-            gap: 40px; 
-        }
-        .col-item, .col-item:nth-child(2), .col-item:nth-child(3) { 
-            padding: 0; 
-            border-right: none; 
-            border-bottom: 1px solid var(--border-dark); 
-            padding-bottom: 36px; 
-        }
-        .nav-container { padding: 14px 20px; }
-        .nav-menu { display: none; }
-        .dark-container, .work-section, .contact-section, footer { padding-left: 20px; padding-right: 20px; }
-        footer { flex-direction: column; gap: 20px; align-items: flex-start; }
-        }
-    </style>
-    </head>
-    <body>
-
-    <!-- Custom Cursor -->
-    <div class="cursor-dot"></div>
-    <div class="cursor-ring"></div>
-
-    <!-- Header -->
-    <header>
-        <div class="nav-container">
-        <a href="#" class="logo">Muhammad Usman<span>®</span></a>
-        <div class="nav-right">
-            <div class="nav-menu">
-            <a href="#about">About</a>
-            <a href="#capabilities">Services</a>
-            <a href="#work">Projects</a>
-            
-            </div>
-            <div class="nav-actions">
-            <!-- Social Icons & Gmail Direct Compose Tab -->
-            <div class="social-links">
-                <a href="https://github.com/usmandotcode" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="GitHub">
-                <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                </a>
-                <a href="https://www.linkedin.com/in/muhammad-usman-iiiixi-workspace" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="LinkedIn">
-                <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                </a>
-                <!-- Gmail Compose Link -->
-                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=muhamusman47@hotmail.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="Open Gmail Compose">
-                <svg viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 6.013-9.518-6.013h19.036zm-19.518 14v-11.772l10 6.321 10-6.321v11.772h-20z"/></svg>
-                </a>
-            </div>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=muhamusman47@hotmail.com" target="_blank" rel="noopener noreferrer" class="pill-btn">Contact &rarr;</a>
-            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Muhammad Usman — Systems & Security</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+    --bg-light: #f7f7f8;
+    --bg-dark: #0d0d0f;
+    --text-dark: #0f1012;
+    --text-light: #f4f4f5;
+    --text-muted: #71717a;
+    --text-muted-dark: #909099;
+    --border-light: rgba(0, 0, 0, 0.08);
+    --border-dark: rgba(255, 255, 255, 0.12);
+    --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    }
+
+    /* Custom Cursor */
+    @media (min-width: 961px) {
+    * { cursor: none !important; }
+    .cursor-dot {
+        width: 6px; height: 6px; background-color: var(--text-dark);
+        position: fixed; top: 0; left: 0; border-radius: 50%;
+        pointer-events: none; z-index: 9999; transform: translate(-50%, -50%);
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+    .cursor-ring {
+        width: 32px; height: 32px; border: 1px solid rgba(15, 16, 18, 0.35);
+        position: fixed; top: 0; left: 0; border-radius: 50%;
+        pointer-events: none; z-index: 9998; transform: translate(-50%, -50%);
+        transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease-out, background-color 0.25s ease-out;
+    }
+    body.hovered .cursor-ring {
+        width: 54px; height: 54px; border-color: rgba(15, 16, 18, 0.15); background-color: rgba(15, 16, 18, 0.05);
+    }
+    body.hovered-dark .cursor-dot { background-color: var(--text-light); }
+    body.hovered-dark .cursor-ring {
+        border-color: rgba(244, 244, 245, 0.4); background-color: rgba(244, 244, 245, 0.1);
+    }
+    }
+
+    @media (max-width: 960px) {
+    .cursor-dot, .cursor-ring { display: none !important; }
+    }
+
+    .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+    }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+
+    header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(247, 247, 248, 0.85); backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-light);
+    }
+
+    .nav-container {
+    max-width: 1360px; margin: 0 auto; padding: 16px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .logo {
+    font-size: 1.2rem; font-weight: 700; letter-spacing: -0.035em;
+    color: var(--text-dark); text-decoration: none;
+    }
+    .logo span { font-size: 0.7rem; vertical-align: super; font-weight: 400; margin-left: 2px; }
+
+    .nav-right { display: flex; align-items: center; gap: 32px; margin-left: auto; }
+    .nav-menu { display: flex; align-items: center; gap: 28px; }
+    .nav-menu a {
+    position: relative; color: var(--text-dark); text-decoration: none;
+    font-size: 0.88rem; font-weight: 500; opacity: 0.8; transition: opacity 0.2s ease;
+    }
+    .nav-menu a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0; width: 0%; height: 1.5px;
+    background-color: var(--text-dark); transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-menu a:hover { opacity: 1; }
+    .nav-menu a:hover::after { width: 100%; }
+
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .social-links { display: flex; align-items: center; gap: 10px; }
+    .social-icon-btn {
+    width: 36px; height: 36px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; color: var(--text-dark);
+    background: rgba(0, 0, 0, 0.04); border: 1px solid var(--border-light);
+    text-decoration: none; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .social-icon-btn svg { width: 16px; height: 16px; fill: currentColor; transition: transform 0.2s ease; }
+    .social-icon-btn:hover { background: var(--text-dark); color: var(--bg-light); transform: translateY(-2px); }
+    .social-icon-btn:hover svg { transform: scale(1.1); }
+
+    .pill-btn {
+    background: var(--text-dark); color: var(--text-light); padding: 9px 22px;
+    border-radius: 999px; font-size: 0.85rem; font-weight: 600; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px; border: 1px solid transparent;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s, box-shadow 0.2s;
+    }
+    .pill-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); }
+    .pill-btn-light { background: rgba(0, 0, 0, 0.05); color: var(--text-dark); border: 1px solid var(--border-light); }
+    .pill-btn-light:hover { background: rgba(0, 0, 0, 0.09); }
+
+    .hero-section {
+    position: relative; height: 100vh; min-height: 100vh;
+    display: flex; align-items: center; max-width: 1360px; margin: 0 auto; padding: 80px 48px 0;
+    }
+    .hero-content { max-width: 600px; z-index: 2; }
+    .hero-title { font-size: 3.6rem; font-weight: 600; letter-spacing: -0.045em; line-height: 1.08; margin-bottom: 32px; color: var(--text-dark); }
+    #particle-canvas { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 720px; height: 720px; z-index: 1; }
+
+    .dark-section { background-color: var(--bg-dark); color: var(--text-light); padding: 120px 0; position: relative; }
+    .dark-container { max-width: 1360px; margin: 0 auto; padding: 0 48px; }
+
+    .split-hero-dark {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin-bottom: 100px;
+    }
+
+    .dark-widget-box {
+    background: transparent; border: none;
+    border-radius: 0; height: 320px; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    }
+    #security-canvas { width: 100%; height: 100%; display: block; background: transparent; }
+
+    .dark-statement { font-size: 2.2rem; font-weight: 400; letter-spacing: -0.035em; line-height: 1.28; color: var(--text-light); }
+
+    .capability-columns {
+    display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border-dark); padding-top: 54px; gap: 40px;
+    }
+
+    .col-item {
+    padding-right: 20px; border-right: 1px solid var(--border-dark); transition: transform 0.30s ease;
+    display: flex; flex-direction: column;
+    }
+    .col-item:last-child { border-right: none; padding-right: 0; }
+    .col-item:hover { transform: translateY(-3px); }
+
+    .col-3d-box {
+    width: 100%; height: 140px; background: transparent; margin-bottom: 20px;
+    position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+    }
+    .col-canvas { width: 100%; height: 100%; display: block; background: transparent; }
+
+    .col-num { font-size: 0.8rem; font-weight: 600; color: var(--text-muted-dark); letter-spacing: 0.05em; margin-bottom: 12px; font-family: monospace; }
+    .col-title { font-size: 1.5rem; font-weight: 500; letter-spacing: -0.03em; margin-bottom: 12px; color: var(--text-light); }
+    .col-desc { color: var(--text-muted-dark); font-size: 0.92rem; line-height: 1.6; margin-bottom: 24px; flex-grow: 1; }
+
+    .inline-link {
+    color: var(--text-light); text-decoration: none; font-size: 0.88rem; font-weight: 500;
+    border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 2px; transition: opacity 0.2s, border-color 0.2s, padding-left 0.2s; display: inline-block; width: max-content;
+    }
+    .inline-link:hover { opacity: 0.8; border-color: var(--text-light); padding-left: 4px; }
+
+    .work-section { padding: 120px 0; max-width: 1360px; margin: 0 auto; padding-left: 48px; padding-right: 48px; }
+    .section-headline { font-size: 2.3rem; font-weight: 500; letter-spacing: -0.035em; margin-bottom: 54px; max-width: 680px; line-height: 1.2; }
+
+    .projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+    .project-card {
+    background: #ffffff; border: 1px solid var(--border-light); border-radius: 20px; padding: 40px;
+    text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; min-height: 320px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+    }
+    .project-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08); border-color: rgba(15, 16, 18, 0.2); }
+    .project-title { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 12px; }
+    .project-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.55; }
+    .project-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--border-light); }
+    .project-tech { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+    .arrow-icon { font-size: 1.1rem; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .project-card:hover .arrow-icon { transform: translateX(5px); }
+
+    footer {
+    border-top: 1px solid var(--border-light); padding: 40px 48px; max-width: 1360px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: var(--text-muted);
+    }
+    .footer-left { display: flex; flex-direction: column; gap: 4px; }
+
+    @media (max-width: 960px) {
+    .hero-section { height: 100vh; min-height: 100vh; padding: 70px 20px 0; align-content: center; }
+    .hero-title { font-size: 2.2rem; margin-bottom: 20px; }
+    #particle-canvas { opacity: 0.1; width: 100%; height: 100%; right: 0; pointer-events: none; }
+    .split-hero-dark, .capability-columns, .projects-grid { grid-template-columns: 1fr; gap: 40px; }
+    .col-item { border-right: none; border-bottom: 1px solid var(--border-dark); padding-bottom: 36px; padding-right: 0; }
+    .nav-container { padding: 14px 20px; }
+    .nav-menu { display: none; }
+    .dark-container, .work-section, footer { padding-left: 20px; padding-right: 20px; }
+    footer { flex-direction: column; gap: 20px; align-items: flex-start; }
+    }
+</style>
+</head>
+<body>
+
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+
+<header>
+    <div class="nav-container">
+    <a href="#" class="logo">Muhammad Usman<span>®</span></a>
+    <div class="nav-right">
+        <div class="nav-menu">
+        <a href="#about">About</a>
+        <a href="#capabilities">Services</a>
+        <a href="#work">Projects</a>
+        </div>
+        <div class="nav-actions">
+        <div class="social-links">
+            <a href="https://github.com/usmandotcode" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/muhammad-usman-iiiixi-workspace" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="LinkedIn">
+            <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            </a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=muhamusman47@hotmail.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="Open Gmail Compose">
+            <svg viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 6.013-9.518-6.013h19.036zm-19.518 14v-11.772l10 6.321 10-6.321v11.772h-20z"/></svg>
+            </a>
+        </div>
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=muhamusman47@hotmail.com" target="_blank" rel="noopener noreferrer" class="pill-btn">Contact &rarr;</a>
+        </div>
+    </div>
+    </div>
+</header>
+
+<section class="hero-section" id="about">
+    <div class="hero-content reveal">
+    <h1 class="hero-title">Securing digital ecosystems from the inside out.</h1>
+    <a href="#capabilities" class="pill-btn pill-btn-light">How I build &rarr;</a>
+    </div>
+    <canvas id="particle-canvas" width="720" height="720"></canvas>
+</section>
+
+<section class="dark-section" id="capabilities">
+    <div class="dark-container">
+    
+    <div class="split-hero-dark reveal">
+        <div class="dark-widget-box">
+            <canvas id="security-canvas"></canvas>
+        </div>
+        <div>
+        <p class="dark-statement">
+            Applying core cyber security concepts, practicing forensic investigation techniques, scripting custom utilities, and developing practical software applications.
+        </p>
+        <div style="margin-top: 32px;">
+            <a href="#work" class="pill-btn" style="background: #ffffff; color: #0d0d0f;">Discover projects &rarr;</a>
         </div>
         </div>
-    </header>
+    </div>
 
-    <!-- Hero Section -->
-    <section class="hero-section" id="about">
-        <div class="hero-content reveal">
-        <h1 class="hero-title">Securing digital ecosystems from the inside out.</h1>
-        <a href="#capabilities" class="pill-btn pill-btn-light">How I build &rarr;</a>
-        </div>
-        <canvas id="particle-canvas" width="720" height="720"></canvas>
-    </section>
-
-    <!-- Dark Section -->
-    <section class="dark-section" id="capabilities">
-        <div class="dark-container">
-        
-        <div class="split-hero-dark reveal">
-            <div></div>
-            <div>
-            <p class="dark-statement">
-                Applying core cyber security concepts, practicing forensic investigation techniques, scripting custom utilities, and developing practical software applications.
-            </p>
-            <div style="margin-top: 32px;">
-                <a href="#work" class="pill-btn" style="background: #ffffff; color: #0d0d0f;">Discover projects &rarr;</a>
+    <!-- Capability Columns with 3D Transparent Canvases -->
+    <div class="capability-columns">
+        <div class="col-item reveal delay-1">
+            <div class="col-3d-box">
+                <canvas id="shield-canvas" class="col-canvas"></canvas>
             </div>
-            </div>
-        </div>
-
-        <!-- Capability Columns -->
-        <div class="capability-columns">
-            <div class="col-item reveal delay-1">
+            <div class="col-num">01 / SERVICE</div>
             <h3 class="col-title">Security & Forensics</h3>
             <p class="col-desc">
                 Digital forensics analysis, system auditing, network port scanning, and automated security tools.
             </p>
             <a href="#work" class="inline-link">See projects</a>
-            </div>
+        </div>
 
-            <div class="col-item reveal delay-2">
+        <div class="col-item reveal delay-2">
+            <div class="col-3d-box">
+                <canvas id="cube-canvas" class="col-canvas"></canvas>
+            </div>
+            <div class="col-num">02 / SERVICE</div>
             <h3 class="col-title">Systems & Web</h3>
             <p class="col-desc">
                 Standard C++ execution binaries, Python scripting, full-stack PHP/MySQL database architecture, and frontend systems.
             </p>
             <a href="#work" class="inline-link">See projects</a>
-            </div>
+        </div>
 
-            <div class="col-item reveal delay-3">
+        <div class="col-item reveal delay-3">
+            <div class="col-3d-box">
+                <canvas id="node-canvas" class="col-canvas"></canvas>
+            </div>
+            <div class="col-num">03 / SERVICE</div>
             <h3 class="col-title">Environment & AI</h3>
             <p class="col-desc">
                 Arch Linux desktop workflow setups, Termux deployments, local Ollama LLM integration, Docker containers, and CI pipelines.
             </p>
             <a href="#work" class="inline-link">See projects</a>
-            </div>
         </div>
+    </div>
 
+    </div>
+</section>
+
+<section class="work-section" id="work">
+    <h2 class="section-headline reveal">
+    Selected software solutions turning complex systems into clean execution.
+    </h2>
+
+    <div class="projects-grid">
+    <a href="https://github.com/usmandotcode/rezebot" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
+        <div>
+        <div class="project-title">Reze AI Chatbot</div>
+        <p class="project-desc">Real-time local LLM interface integrated with Streamlit and local Ollama model runtime for private AI interaction.</p>
         </div>
-    </section>
+        <div class="project-footer">
+        <span class="project-tech">Python / Ollama</span>
+        <span class="arrow-icon">&rarr;</span>
+        </div>
+    </a>
 
-    <!-- Selected Work Section -->
-    <section class="work-section" id="work">
-        <h2 class="section-headline reveal">
-        Selected software solutions turning complex systems into clean execution.
-        </h2>
+    <a href="https://github.com/usmandotcode/vulnur-scanner" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-2">
+        <div>
+        <div class="project-title">Vulnerability Scanner</div>
+        <p class="project-desc">Automated system port analyzer and security inspection utility designed for rapid local network auditing.</p>
+        </div>
+        <div class="project-footer">
+        <span class="project-tech">Python / Security</span>
+        <span class="arrow-icon">&rarr;</span>
+        </div>
+    </a>
 
-        <div class="projects-grid">
+    <a href="https://github.com/usmandotcode/PF-project-ATM" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-3">
+        <div>
+        <div class="project-title">ATM Simulator</div>
+        <p class="project-desc">High-performance C++ program demonstrating core programming fundamentals, PIN authentication, and balance ledgers.</p>
+        </div>
+        <div class="project-footer">
+        <span class="project-tech">C++ / CLI</span>
+        <span class="arrow-icon">&rarr;</span>
+        </div>
+    </a>
+
+    <a href="https://github.com/usmandotcode/hospital-management-System-01" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-4">
+        <div>
+        <div class="project-title">Hospital Management Portal</div>
+        <p class="project-desc">Relational database web portal for administrative healthcare management, patient logs, and doctor schedules.</p>
+        </div>
+        <div class="project-footer">
+        <span class="project-tech">PHP / MySQL</span>
+        <span class="arrow-icon">&rarr;</span>
+        </div>
+    </a>
+    </div>
+</section>
+
+<footer class="reveal">
+    <div class="footer-left">
+    <div style="font-weight: 600; color: var(--text-dark);">Muhammad Usman</div>
+    <div>Digital Forensics & Cyber Security &bull; Karachi</div>
+    </div>
+    
+    <div class="social-links">
+    <a href="https://github.com/usmandotcode" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="GitHub">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+    </a>
+    <a href="https://www.linkedin.com/in/muhammad-usman-iiiixi-workspace" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="LinkedIn">
+        <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+    </a>
+    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=muhamusman47@hotmail.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="Open Gmail Compose">
+        <svg viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 6.013-9.518-6.013h19.036zm-19.518 14v-11.772l10 6.321 10-6.321v11.772h-20z"/></svg>
+    </a>
+    </div>
+</footer>
+
+<script>
+    const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('active'); }
+        else { entry.target.classList.remove('active'); }
+    });
+    }, observerOptions);
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    if (window.innerWidth > 960) {
+    const dot = document.querySelector('.cursor-dot');
+    const ring = document.querySelector('.cursor-ring');
+    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX; mouseY = e.clientY;
+        dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+    });
+
+    function animateCursor() {
+        ringX += (mouseX - ringX) * 0.15;
+        ringY += (mouseY - ringY) * 0.15;
+        ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+        requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    const hoverables = document.querySelectorAll('a, button, .project-card, .social-icon-btn');
+    hoverables.forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('hovered'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('hovered'));
+    });
+
+    const darkSection = document.querySelector('.dark-section');
+    darkSection.addEventListener('mouseenter', () => document.body.classList.add('hovered-dark'));
+    darkSection.addEventListener('mouseleave', () => document.body.classList.remove('hovered-dark'));
+    }
+
+    // Hero Particle Sphere
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width, height = canvas.height;
+    const cx = width / 2, cy = height / 2;
+    const numParticles = 1400, radius = 250, particles = [];
+    let targetAngleX = 0.002, targetAngleY = 0.002;
+
+    for (let i = 0; i < numParticles; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos((Math.random() * 2) - 1);
+    particles.push({ x: radius * Math.sin(phi) * Math.cos(theta), y: radius * Math.sin(phi) * Math.sin(theta), z: radius * Math.cos(phi) });
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    targetAngleY = ((e.clientX - rect.left) - cx) / cx * 0.015;
+    targetAngleX = -((e.clientY - rect.top) - cy) / cy * 0.015;
+    });
+
+    let currentAngleX = 0.002, currentAngleY = 0.002;
+    function renderParticles() {
+    ctx.clearRect(0, 0, width, height);
+    currentAngleX += (targetAngleX - currentAngleX) * 0.05;
+    currentAngleY += (targetAngleY - currentAngleY) * 0.05;
+
+    for (let i = 0; i < numParticles; i++) {
+        const p = particles[i];
+        let x1 = p.x * Math.cos(currentAngleY) - p.z * Math.sin(currentAngleY);
+        let z1 = p.z * Math.cos(currentAngleY) + p.x * Math.sin(currentAngleY);
+        let y1 = p.y * Math.cos(currentAngleX) - z1 * Math.sin(currentAngleX);
+        let z2 = z1 * Math.cos(currentAngleX) + p.y * Math.sin(currentAngleX);
+        p.x = x1; p.y = y1; p.z = z2;
+
+        const scale = 400 / (400 + p.z);
+        const x2D = p.x * scale + cx;
+        const y2D = p.y * scale + cy;
+        const alpha = Math.max(0.08, (p.z + radius) / (2 * radius));
+
+        ctx.fillStyle = `rgba(15, 16, 18, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(x2D, y2D, Math.max(0.8, scale * 1.6), 0, Math.PI * 2);
+        ctx.fill();
+    }
+    requestAnimationFrame(renderParticles);
+    }
+    renderParticles();
+
+    // Resize Handler for all Canvases
+    const secCanvas = document.getElementById('security-canvas');
+    const secCtx = secCanvas.getContext('2d');
+    
+    function resizeCanvases() {
+        const box = secCanvas.parentElement;
+        secCanvas.width = box.clientWidth;
+        secCanvas.height = box.clientHeight;
+
+        document.querySelectorAll('.col-3d-box').forEach(b => {
+            const c = b.querySelector('canvas');
+            c.width = b.clientWidth;
+            c.height = b.clientHeight;
+        });
+    }
+    resizeCanvases();
+    window.addEventListener('resize', resizeCanvases);
+
+    // 3D Rotating Security Shield / Lock Node Animation
+    let secAngle = 0;
+    function renderSecurityShield() {
+        secCtx.clearRect(0, 0, secCanvas.width, secCanvas.height);
+        const scx = secCanvas.width / 2;
+        const scy = secCanvas.height / 2;
+        secAngle += 0.015;
+
+        // Draw multiple rotating radar/security rings
+        secCtx.strokeStyle = 'rgba(244, 244, 245, 0.12)';
+        secCtx.lineWidth = 1;
         
-        <a href="https://github.com/usmandotcode/rezebot" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
-            <div>
-            <div class="project-title">Reze AI Chatbot</div>
-            <p class="project-desc">Real-time local LLM interface integrated with Streamlit and local Ollama model runtime for private AI interaction.</p>
-            </div>
-            <div class="project-footer">
-            <span class="project-tech">Python / Ollama</span>
-            <span class="arrow-icon">&rarr;</span>
-            </div>
-        </a>
+        for(let r = 50; r <= 110; r += 30) {
+            secCtx.beginPath();
+            secCtx.arc(scx, scy, r, 0, Math.PI * 2);
+            secCtx.stroke();
+        }
 
-        <a href="https://github.com/usmandotcode/vulnur-scanner" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-2">
-            <div>
-            <div class="project-title">Vulnerability Scanner</div>
-            <p class="project-desc">Automated system port analyzer and security inspection utility designed for rapid local network auditing.</p>
-            </div>
-            <div class="project-footer">
-            <span class="project-tech">Python / Security</span>
-            <span class="arrow-icon">&rarr;</span>
-            </div>
-        </a>
+        // Rotating targeting crosshairs
+        secCtx.save();
+        secCtx.translate(scx, scy);
+        secCtx.rotate(secAngle);
+        secCtx.strokeStyle = 'rgba(244, 244, 245, 0.25)';
+        secCtx.setLineDash([4, 8]);
+        secCtx.beginPath();
+        secCtx.arc(0, 0, 80, 0, Math.PI * 2);
+        secCtx.stroke();
+        secCtx.restore();
 
-        <a href="https://github.com/usmandotcode/PF-project-ATM" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-3">
-            <div>
-            <div class="project-title">ATM Simulator</div>
-            <p class="project-desc">High-performance C++ program demonstrating core programming fundamentals, PIN authentication, and balance ledgers.</p>
-            </div>
-            <div class="project-footer">
-            <span class="project-tech">C++ / CLI</span>
-            <span class="arrow-icon">&rarr;</span>
-            </div>
-        </a>
-
-        <a href="https://github.com/usmandotcode/hospital-management-System-01" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-4">
-            <div>
-            <div class="project-title">Hospital Management Portal</div>
-            <p class="project-desc">Relational database web portal for administrative healthcare management, patient logs, and doctor schedules.</p>
-            </div>
-            <div class="project-footer">
-            <span class="project-tech">PHP / MySQL</span>
-            <span class="arrow-icon">&rarr;</span>
-            </div>
-        </a>
-
-        </div>
-    </section>
-
-
-    <!-- Footer -->
-    <footer class="reveal">
-        <div class="footer-left">
-        <div style="font-weight: 600; color: var(--text-dark);"></div>
-        <div></div>
-        </div>
+        // Central 3D Shield Vector Wireframe
+        secCtx.save();
+        secCtx.translate(scx, scy);
         
-        <div class="social-links">
-        <a href="https://github.com/usmandotcode" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="GitHub">
-            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        </a>
-        <a href="https://www.linkedin.com/in/muhammad-usman-iiiixi-workspace" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="LinkedIn">
-            <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-        </a>
-        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=muhamusman47@hotmail.com" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="Open Gmail Compose">
-            <svg viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 6.013-9.518-6.013h19.036zm-19.518 14v-11.772l10 6.321 10-6.321v11.772h-20z"/></svg>
-        </a>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script>
-        /* Bi-directional IntersectionObserver Scroll Animations */
-        const observerOptions = {
-        root: null,
-        rootMargin: '0px 0px -50px 0px',
-        threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-            entry.target.classList.add('active');
-            } else {
-            entry.target.classList.remove('active');
-            }
-        });
-        }, observerOptions);
-
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        /* Custom Trailing Ring Cursor Script (Desktop Only) */
-        if (window.innerWidth > 960) {
-        const dot = document.querySelector('.cursor-dot');
-        const ring = document.querySelector('.cursor-ring');
-
-        let mouseX = 0, mouseY = 0;
-        let ringX = 0, ringY = 0;
-
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-        });
-
-        function animateCursor() {
-            ringX += (mouseX - ringX) * 0.15;
-            ringY += (mouseY - ringY) * 0.15;
-            ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        const hoverables = document.querySelectorAll('a, button, .project-card, .social-icon-btn, .contact-card-item');
-        hoverables.forEach(el => {
-            el.addEventListener('mouseenter', () => document.body.classList.add('hovered'));
-            el.addEventListener('mouseleave', () => document.body.classList.remove('hovered'));
-        });
-
-        const darkSection = document.querySelector('.dark-section');
-        darkSection.addEventListener('mouseenter', () => document.body.classList.add('hovered-dark'));
-        darkSection.addEventListener('mouseleave', () => document.body.classList.remove('hovered-dark'));
-        }
-
-        /* Particle Canvas Logic */
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-
-        const width = canvas.width;
-        const height = canvas.height;
-        const cx = width / 2;
-        const cy = height / 2;
-
-        const numParticles = 1400;
-        const radius = 250;
-        const particles = [];
-
-        let canvasMouseX = 0;
-        let canvasMouseY = 0;
-        let targetAngleX = 0.002;
-        let targetAngleY = 0.002;
-
-        for (let i = 0; i < numParticles; i++) {
-        const theta = Math.random() * Math.PI * 2;
-        const phi = Math.acos((Math.random() * 2) - 1);
+        // Slight 3D rotation effect on X/Y axis
+        const tiltX = Math.sin(secAngle * 0.8) * 0.2;
+        const tiltY = Math.cos(secAngle) * 0.3;
         
-        particles.push({
-            x: radius * Math.sin(phi) * Math.cos(theta),
-            y: radius * Math.sin(phi) * Math.sin(theta),
-            z: radius * Math.cos(phi)
-        });
-        }
+        secCtx.scale(1 + tiltX * 0.1, 1 + tiltY * 0.1);
 
-        canvas.addEventListener('mousemove', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        canvasMouseX = (e.clientX - rect.left) - cx;
-        canvasMouseY = (e.clientY - rect.top) - cy;
+        // Shield Outer Path
+        secCtx.strokeStyle = 'rgba(244, 244, 245, 0.9)';
+        secCtx.fillStyle = 'rgba(244, 244, 245, 0.04)';
+        secCtx.lineWidth = 2;
         
-        targetAngleY = (canvasMouseX / cx) * 0.015;
-        targetAngleX = -(canvasMouseY / cy) * 0.015;
+        secCtx.beginPath();
+        secCtx.moveTo(0, -45);
+        secCtx.lineTo(35, -25);
+        secCtx.lineTo(35, 10);
+        secCtx.quadraticCurveTo(35, 45, 0, 60);
+        secCtx.quadraticCurveTo(-35, 45, -35, 10);
+        secCtx.lineTo(-35, -25);
+        secCtx.closePath();
+        secCtx.fill();
+        secCtx.stroke();
+
+        // Inner Security Lock / Check Icon lines
+        secCtx.strokeStyle = 'rgba(244, 244, 245, 0.8)';
+        secCtx.lineWidth = 2;
+        secCtx.beginPath();
+        // Lock body box
+        secCtx.rect(-10, -2, 20, 18);
+        // Lock shackle loop
+        secCtx.moveTo(-6, -2);
+        secCtx.lineTo(-6, -12);
+        secCtx.arc(0, -12, 6, Math.PI, 0, false);
+        secCtx.lineTo(6, -2);
+        secCtx.stroke();
+
+        secCtx.restore();
+
+        // Orbiting glowing data node
+        const nodeX = scx + Math.cos(secAngle * 2) * 95;
+        const nodeY = scy + Math.sin(secAngle * 2) * 95;
+        secCtx.fillStyle = 'rgba(244, 244, 245, 0.95)';
+        secCtx.beginPath();
+        secCtx.arc(nodeX, nodeY, 3, 0, Math.PI * 2);
+        secCtx.fill();
+
+        requestAnimationFrame(renderSecurityShield);
+    }
+    renderSecurityShield();
+
+    // 1. Security Shield Canvas (Column 1)
+    const shieldCanvas = document.getElementById('shield-canvas');
+    const shieldCtx = shieldCanvas.getContext('2d');
+    let shieldAngle = 0;
+    function renderShield() {
+        shieldCtx.clearRect(0, 0, shieldCanvas.width, shieldCanvas.height);
+        const scx = shieldCanvas.width / 2;
+        const scy = shieldCanvas.height / 2;
+        shieldAngle += 0.02;
+
+        const points = 16;
+        for (let i = 0; i < points; i++) {
+            const angle = (i / points) * Math.PI * 2 + shieldAngle;
+            const r = 35 + Math.sin(i + shieldAngle * 2) * 8;
+            const x = scx + Math.cos(angle) * r * 1.2;
+            const y = scy + Math.sin(angle) * r - 10;
+            
+            shieldCtx.fillStyle = 'rgba(244, 244, 245, 0.75)';
+            shieldCtx.beginPath();
+            shieldCtx.arc(x, y, 2, 0, Math.PI * 2);
+            shieldCtx.fill();
+        }
+
+        shieldCtx.strokeStyle = 'rgba(244, 244, 245, 0.4)';
+        shieldCtx.lineWidth = 1.5;
+        shieldCtx.beginPath();
+        shieldCtx.arc(scx, scy - 10, 22 + Math.sin(shieldAngle) * 4, 0, Math.PI * 2);
+        shieldCtx.stroke();
+
+        requestAnimationFrame(renderShield);
+    }
+    renderShield();
+
+    // 2. Systems Wireframe Cube Canvas (Column 2)
+    const cubeCanvas = document.getElementById('cube-canvas');
+    const cubeCtx = cubeCanvas.getContext('2d');
+    let cubeRotX = 0, cubeRotY = 0;
+    
+    function renderCube() {
+        cubeCtx.clearRect(0, 0, cubeCanvas.width, cubeCanvas.height);
+        const ccx = cubeCanvas.width / 2;
+        const ccy = cubeCanvas.height / 2;
+        cubeRotX += 0.015;
+        cubeRotY += 0.02;
+
+        const size = 32;
+        const vertices = [
+            [-size, -size, -size], [size, -size, -size], [size, size, -size], [-size, size, -size],
+            [-size, -size, size], [size, -size, size], [size, size, size], [-size, size, size]
+        ];
+
+        const projected = vertices.map(([x, y, z]) => {
+            let x1 = x * Math.cos(cubeRotY) - z * Math.sin(cubeRotY);
+            let z1 = z * Math.cos(cubeRotY) + x * Math.sin(cubeRotY);
+            let y1 = y * Math.cos(cubeRotX) - z1 * Math.sin(cubeRotX);
+            let z2 = z1 * Math.cos(cubeRotX) + y * Math.sin(cubeRotX);
+
+            const fov = 160;
+            const scale = fov / (fov + z2 + 100);
+            return { x: ccx + x1 * scale, y: ccy + y1 * scale - 10, alpha: Math.max(0.2, (z2 + size) / (2 * size) + 0.4) };
         });
 
-        let currentAngleX = 0.002;
-        let currentAngleY = 0.002;
+        const edges = [
+            [0,1],[1,2],[2,3],[3,0], [4,5],[5,6],[6,7],[7,4], [0,4],[1,5],[2,6],[3,7]
+        ];
 
-        function renderParticles() {
-        ctx.clearRect(0, 0, width, height);
+        edges.forEach(([i, j]) => {
+            cubeCtx.strokeStyle = `rgba(244, 244, 245, ${(projected[i].alpha + projected[j].alpha) / 2})`;
+            cubeCtx.lineWidth = 1.2;
+            cubeCtx.beginPath();
+            cubeCtx.moveTo(projected[i].x, projected[i].y);
+            cubeCtx.lineTo(projected[j].x, projected[j].y);
+            cubeCtx.stroke();
+        });
 
-        currentAngleX += (targetAngleX - currentAngleX) * 0.05;
-        currentAngleY += (targetAngleY - currentAngleY) * 0.05;
+        projected.forEach(p => {
+            cubeCtx.fillStyle = 'rgba(244, 244, 245, 0.9)';
+            cubeCtx.beginPath();
+            cubeCtx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+            cubeCtx.fill();
+        });
 
-        for (let i = 0; i < numParticles; i++) {
-            const p = particles[i];
+        requestAnimationFrame(renderCube);
+    }
+    renderCube();
 
-            let x1 = p.x * Math.cos(currentAngleY) - p.z * Math.sin(currentAngleY);
-            let z1 = p.z * Math.cos(currentAngleY) + p.x * Math.sin(currentAngleY);
+    // 3. Environment & AI Orbit Node Canvas (Column 3)
+    const nodeCanvas = document.getElementById('node-canvas');
+    const nodeCtx = nodeCanvas.getContext('2d');
+    let nodeAngle = 0;
 
-            let y1 = p.y * Math.cos(currentAngleX) - z1 * Math.sin(currentAngleX);
-            let z2 = z1 * Math.cos(currentAngleX) + p.y * Math.sin(currentAngleX);
+    function renderNode() {
+        nodeCtx.clearRect(0, 0, nodeCanvas.width, nodeCanvas.height);
+        const ncx = nodeCanvas.width / 2;
+        const ncy = nodeCanvas.height / 2;
+        nodeAngle += 0.025;
 
-            p.x = x1;
-            p.y = y1;
-            p.z = z2;
+        nodeCtx.strokeStyle = 'rgba(244, 244, 245, 0.25)';
+        nodeCtx.lineWidth = 1;
+        
+        nodeCtx.beginPath();
+        nodeCtx.ellipse(ncx, ncy - 10, 42, 18, Math.PI / 6, 0, Math.PI * 2);
+        nodeCtx.stroke();
 
-            const scale = 400 / (400 + p.z);
-            const x2D = p.x * scale + cx;
-            const y2D = p.y * scale + cy;
+        nodeCtx.beginPath();
+        nodeCtx.ellipse(ncx, ncy - 10, 42, 18, -Math.PI / 6, 0, Math.PI * 2);
+        nodeCtx.stroke();
 
-            const alpha = Math.max(0.08, (p.z + radius) / (2 * radius));
-            const dotSize = Math.max(0.8, scale * 1.6);
+        const x1 = ncx + Math.cos(nodeAngle) * 42;
+        const y1 = (ncy - 10) + Math.sin(nodeAngle) * 18;
+        
+        const x2 = ncx + Math.cos(nodeAngle + Math.PI) * 42;
+        const y2 = (ncy - 10) + Math.sin(nodeAngle + Math.PI) * 18;
 
-            ctx.fillStyle = `rgba(15, 16, 18, ${alpha})`;
-            ctx.beginPath();
-            ctx.arc(x2D, y2D, dotSize, 0, Math.PI * 2);
-            ctx.fill();
-        }
+        nodeCtx.fillStyle = 'rgba(244, 244, 245, 0.95)';
+        nodeCtx.beginPath();
+        nodeCtx.arc(x1, y1, 3, 0, Math.PI * 2);
+        nodeCtx.arc(x2, y2, 2.5, 0, Math.PI * 2);
+        nodeCtx.fill();
 
-        requestAnimationFrame(renderParticles);
-        }
+        nodeCtx.beginPath();
+        nodeCtx.arc(ncx, ncy - 10, 5, 0, Math.PI * 2);
+        nodeCtx.fill();
 
-        renderParticles();
-    </script>
+        requestAnimationFrame(renderNode);
+    }
+    renderNode();
+</script>
 
-    </body>
-    </html>
+</body>
+</html>
